@@ -15,8 +15,25 @@ export default function Message({ sender, text, answers, isAI }: MessageProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async (copyText: string) => {
+        if (!copyText) return;
+
         try {
-            await navigator.clipboard.writeText(copyText);
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(copyText);
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = copyText;
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                document.execCommand("copy");
+
+                document.body.removeChild(textArea);
+            }
+
             setCopied(true);
             setTimeout(() => setCopied(false), 1500);
         } catch (e) {
@@ -36,13 +53,11 @@ export default function Message({ sender, text, answers, isAI }: MessageProps) {
         };
     };
 
-    // підготовка AI-контенту
     let aiContent = { title: "", description: "" };
     if (answers && answers.length > 0) {
         aiContent = formatAnswerContent(answers[0].content);
     }
 
-    // текст для копіювання
     const copyText = text || (answers && answers.length > 0 ? answers[0].content : "");
 
     return (
