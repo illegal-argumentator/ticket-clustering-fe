@@ -43,7 +43,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
     const checkStatus = async () => {
         try {
-            const res = await fetch("http://194.163.164.118:3344/api/health");
+            const res = await fetch(import.meta.env.VITE_API_URL + "/api/health");
             const data = await res.json();
             if (data.status === "running") {
                 setAppReady(true);
@@ -69,11 +69,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
         try {
             const body: FindTicketRequest = { question: text };
-            const res = await fetch("http://194.163.164.118:3344/api/tickets/find", {
+            const res = await fetch(import.meta.env.VITE_API_URL + "/api/tickets/find", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
-                signal: controller.signal, // прив’язка до AbortController
+                signal: controller.signal,
             });
 
             clearTimeout(timeout);
