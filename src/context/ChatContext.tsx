@@ -81,7 +81,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             let data: FindTicketResponse;
 
             if (!res.ok) {
-                // серверна помилка (504, 500 тощо)
                 data = { status: "no_answer", answers: [] };
             } else {
                 data = await res.json();
@@ -98,7 +97,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
                     }
                 ]);
             } else {
-                // fallback для no_answer або timeout
                 setMessages(prev => [
                     ...prev,
                     {
@@ -115,7 +113,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
             console.error(err);
 
-            // якщо fetch був aborted або інша помилка
             setMessages(prev => [
                 ...prev,
                 {
