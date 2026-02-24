@@ -63,16 +63,13 @@ export default function Message({ sender, text, answers, isAI }: MessageProps) {
     return (
         <div className={`message ${sender}`}>
             <div className="message-bubble">
-                {copyText && (
-                    <button className="copy-btn" onClick={() => handleCopy(copyText)}>
-                        {copied ? "Copied!" : "Copy"}
-                    </button>
-                )}
-
-                {isAI && (
+                {isAI && copyText && (
                     <div className="message-text ai-text">
                         <div className="ai-header">
                             <span className="ai-badge">AI Generated</span>
+                            <button className="copy-btn" onClick={() => handleCopy(copyText)}>
+                                {copied ? "Copied!" : "Copy"}
+                            </button>
                         </div>
                         {aiContent.title && <div className="ai-title">📝 {aiContent.title}</div>}
                         {aiContent.description && <div className="ai-description">{aiContent.description}</div>}
