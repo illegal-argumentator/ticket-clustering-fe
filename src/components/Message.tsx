@@ -28,9 +28,7 @@ export default function Message({ sender, text, answers, isAI }: MessageProps) {
                 document.body.appendChild(textArea);
                 textArea.focus();
                 textArea.select();
-
                 document.execCommand("copy");
-
                 document.body.removeChild(textArea);
             }
 
@@ -58,16 +56,19 @@ export default function Message({ sender, text, answers, isAI }: MessageProps) {
         aiContent = formatAnswerContent(answers[0].content);
     }
 
-    const copyText = text || (answers && answers.length > 0 ? answers[0].content : "");
-
     return (
         <div className={`message ${sender}`}>
             <div className="message-bubble">
-                {isAI && copyText && (
+                {isAI && (aiContent.title || aiContent.description) && (
                     <div className="message-text ai-text">
                         <div className="ai-header">
                             <span className="ai-badge">AI Generated</span>
-                            <button className="copy-btn" onClick={() => handleCopy(copyText)}>
+                            <button
+                                className="copy-btn"
+                                onClick={() =>
+                                    handleCopy(`Title: ${aiContent.title}\nDescription: ${aiContent.description}`)
+                                }
+                            >
                                 {copied ? "Copied!" : "Copy"}
                             </button>
                         </div>
