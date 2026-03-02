@@ -45,15 +45,46 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         try {
             const res = await fetch(import.meta.env.VITE_API_URL + "/api/health");
             const data = await res.json();
+
             if (data.status === "running") {
                 setAppReady(true);
             } else {
                 setAppReady(false);
-                setTimeout(checkStatus, 3000);
+
+                await fetch(import.meta.env.VITE_API_URL + "/api/services/run", {
+                    method: "POST",
+                    headers: { "accept": "*/*" },
+                    body: ""
+                }).catch(err => console.error("Failed to run service", err));
+
+                const start = Date.now();
+                const pingUntilRunning = async () => {
+                    const elapsed = Date.now() - start;
+                    if (elapsed > 60_000) {
+                        console.warn("Service still not running, retrying run...");
+                        return checkStatus();
+                    }
+
+                    try {
+                        const pingRes = await fetch(import.meta.env.VITE_API_URL + "/api/health");
+                        const pingData = await pingRes.json();
+                        if (pingData.status === "running") {
+                            setAppReady(true);
+                            return;
+                        }
+                    } catch (err) {
+                        console.error("Health ping failed", err);
+                    }
+
+                    setTimeout(pingUntilRunning, 3000);
+                };
+
+                pingUntilRunning();
             }
         } catch (err) {
             console.error("Status check failed", err);
             setAppReady(false);
+
             setTimeout(checkStatus, 5000);
         }
     };
